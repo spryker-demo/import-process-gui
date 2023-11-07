@@ -31,6 +31,11 @@ class IndexController extends AbstractController
     /**
      * @var string
      */
+    protected const MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED = 'Url parameter "%s" is required.';
+
+    /**
+     * @var string
+     */
     protected const REDIRECT_URL = '/import-process-gui/index';
 
     /**
@@ -100,5 +105,23 @@ class IndexController extends AbstractController
             'importProcess' => $importProcessTransfer,
             'labelClass' => ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$importProcessTransfer->getStatus()],
         ]);
+    }
+
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|array<string, mixed>
+     */
+    public function runAction(Request $request)
+    {
+        $importProcessId = $this->castId($request->query->get(static::PARAM_ID_PROCESS));
+        if (!$importProcessId) {
+            $this->addErrorMessage(sprintf(static::MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED, static::PARAM_ID_PROCESS));
+        }
+
+        $this->getFactory()
+            ->getImportProcessFacade()
+            ->runImportProcesses([$importProcessId]);
+
     }
 }

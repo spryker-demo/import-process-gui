@@ -5,13 +5,15 @@
 
 {% block action %}
     {{ backActionButton('/import-process-gui', 'List Processes' | trans) }}
+    {{ backActionButton('/product-management', 'List of products' | trans) }}
+    {{ createActionButton('/import-process-gui/run?id-process=' ~ importProcess.idImportProcess, 'Rerun Import' | trans) }}
 {% endblock %}
 
 {% block content %}
     {% embed '@Gui/Partials/widget.twig' with { widget_title: 'Import status' | trans } %}
         {% block widget_content %}
             {% if importProcess %}
-                {% if importProcess.status == 'created' %}
+                {% if importProcess.status == 'started' %}
                     <input type="button" class="btn btn-primary btn-w-m" value="{{ 'Refresh status' | trans }}" id="refresh-status-button" data-id="{{ importProcess.idImportProcess }}">
                 {% endif %}
                 <div id="process-status-container">
