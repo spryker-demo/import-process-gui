@@ -10,9 +10,12 @@ require('../sass/main.scss');
 var $id = $('#refresh-status-button').data('id');
 $('#refresh-status-button').click(function (e) {
     e.preventDefault();
-    $('#process-status-container').load('/import-process-gui/index/view-status?id-process=' + $id);
-    var $newStatus = $('#process-status-data').data('status');
-    if ($.inArray($newStatus, ['created', 'started']) !== -1) {
-        $('#refresh-status-button').remove();
-    }
+
+    const url = '/import-process-gui/index/view-status?id-process=' + $id;
+    $('#process-status-container').load(url, function () {
+        const status = $('#process-status-data').data('status');
+        if ($.inArray(status, ['created', 'started']) === -1) {
+            $('#refresh-status-button').remove();
+        }
+    });
 });
