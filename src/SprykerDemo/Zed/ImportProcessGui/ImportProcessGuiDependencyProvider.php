@@ -77,9 +77,9 @@ class ImportProcessGuiDependencyProvider extends AbstractBundleDependencyProvide
      */
     protected function addImportProcessQuery(Container $container): Container
     {
-        $container->set(static::QUERY_IMPORT_PROCESS, function () {
+        $container->set(static::QUERY_IMPORT_PROCESS, $container->factory(function () {
             return SpyImportProcessQuery::create();
-        });
+        }));
 
         return $container;
     }
