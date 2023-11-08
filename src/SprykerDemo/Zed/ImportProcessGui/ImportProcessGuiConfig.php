@@ -16,8 +16,9 @@ class ImportProcessGuiConfig extends AbstractBundleConfig
      * @var array<string, string>
      */
     public const STATUS_CLASS_LABEL_MAPPING = [
-        SpyImportProcessTableMap::COL_STATUS_STARTED => 'label-warning',
+        SpyImportProcessTableMap::COL_STATUS_CREATED => 'label-warning',
         SpyImportProcessTableMap::COL_STATUS_FINISHED => 'label-success',
         SpyImportProcessTableMap::COL_STATUS_FAILED => 'label-danger',
+        SpyImportProcessTableMap::COL_STATUS_STARTED => 'label-warning',
     ];
 }

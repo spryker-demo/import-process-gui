@@ -6,7 +6,7 @@
 {% block action %}
     {{ backActionButton('/import-process-gui', 'List Processes' | trans) }}
     {{ backActionButton('/product-management', 'List of products' | trans) }}
-    {{ createActionButton('/import-process-gui/run?id-process=' ~ importProcess.idImportProcess, 'Rerun Import' | trans) }}
+    {{ createActionButton('/import-process-gui/index/rerun?id-process=' ~ importProcess.idImportProcess, 'Rerun Import' | trans) }}
 {% endblock %}
 
 {% block content %}

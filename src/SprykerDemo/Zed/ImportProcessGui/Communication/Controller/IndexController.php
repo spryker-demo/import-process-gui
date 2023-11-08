@@ -10,6 +10,7 @@ namespace SprykerDemo\Zed\ImportProcessGui\Communication\Controller;
 use Spryker\Zed\Kernel\Communication\Controller\AbstractController;
 use SprykerDemo\Zed\ImportProcessGui\ImportProcessGuiConfig;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -31,11 +32,6 @@ class IndexController extends AbstractController
     /**
      * @var string
      */
-    protected const MESSAGE_IMPORT_PROCESS_STARTED = 'Import process with id #%d has been started.';
-
-    /**
-     * @var string
-     */
     protected const MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED = 'Url parameter "%s" is required.';
 
     /**
@@ -46,7 +42,7 @@ class IndexController extends AbstractController
     /**
      * @var string
      */
-    protected const REDIRECT_URL_VIEW = '/import-process-gui/view?id-process=%d';
+    protected const REDIRECT_URL_VIEW = '/import-process-gui/index/view?id-process=%d';
 
     /**
      * @return array<string, mixed>
@@ -122,7 +118,7 @@ class IndexController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|array<string, mixed>
      */
-    public function runAction(Request $request)
+    public function rerunAction(Request $request): RedirectResponse
     {
         $importProcessId = $this->castId($request->query->get(static::PARAM_ID_PROCESS));
         if (!$importProcessId) {
@@ -136,13 +132,11 @@ class IndexController extends AbstractController
             ->getImportProcessFacade()
             ->restartImportProcessById($importProcessId);
 
-        if (!$importProcessResponseTransfer->getIsSuccess()) {
-            $this->addErrorMessage($importProcessResponseTransfer->getMessage());
-
-            return $this->redirectResponse(sprintf(static::REDIRECT_URL_VIEW, $importProcessId));
+        if ($importProcessResponseTransfer->getMessage()) {
+            $importProcessResponseTransfer->getIsSuccess()
+                ? $this->addInfoMessage($importProcessResponseTransfer->getMessage())
+                : $this->addErrorMessage($importProcessResponseTransfer->getMessage());
         }
-
-        $this->addInfoMessage(sprintf(static::MESSAGE_IMPORT_PROCESS_STARTED, $importProcessId));
 
         return $this->redirectResponse(sprintf(static::REDIRECT_URL_VIEW, $importProcessId));
     }
