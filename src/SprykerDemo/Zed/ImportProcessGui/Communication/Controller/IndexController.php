@@ -81,8 +81,14 @@ class IndexController extends AbstractController
             ->getImportProcessFacade()
             ->findImportProcessById($idImportProcess);
 
+        /** @var \Generated\Shared\Transfer\ImportProcessSourceMapTransfer $importProcessSourceMapTransfer */
+        $importProcessSourceMapTransfer = $importProcessTransfer->getPayload()?->getSourceMaps()
+            ->getIterator()
+            ->offsetGet(0);
+
         return $this->viewResponse([
             'idImportProcess' => $idImportProcess,
+            'sourceUrl' => $importProcessSourceMapTransfer?->getSource(),
             'importProcess' => $importProcessTransfer,
             'labelClass' => $importProcessTransfer ? ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$importProcessTransfer->getStatus()] : '',
         ]);
