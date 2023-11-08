@@ -12,7 +12,7 @@ $('#refresh-status-button').click(function (e) {
     e.preventDefault();
     $('#process-status-container').load('/import-process-gui/index/view-status?id-process=' + $id);
     var $newStatus = $('#process-status-data').data('status');
-    if ($newStatus !== 'started') {
+    if (!$.inArray($newStatus, ['created', 'started'])) {
         $('#refresh-status-button').remove();
     }
 });

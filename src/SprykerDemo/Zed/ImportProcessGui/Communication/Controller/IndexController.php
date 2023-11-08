@@ -31,12 +31,22 @@ class IndexController extends AbstractController
     /**
      * @var string
      */
+    protected const MESSAGE_IMPORT_PROCESS_STARTED = 'Import process with id #%d has been started.';
+
+    /**
+     * @var string
+     */
     protected const MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED = 'Url parameter "%s" is required.';
 
     /**
      * @var string
      */
     protected const REDIRECT_URL = '/import-process-gui/index';
+
+    /**
+     * @var string
+     */
+    protected const REDIRECT_URL_VIEW = '/import-process-gui/view?id-process=%d';
 
     /**
      * @return array<string, mixed>
@@ -116,12 +126,24 @@ class IndexController extends AbstractController
     {
         $importProcessId = $this->castId($request->query->get(static::PARAM_ID_PROCESS));
         if (!$importProcessId) {
-            $this->addErrorMessage(sprintf(static::MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED, static::PARAM_ID_PROCESS));
+            $this->addErrorMessage(sprintf(
+                static::MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED,
+                static::PARAM_ID_PROCESS,
+            ));
         }
 
-        $this->getFactory()
+        $importProcessResponseTransfer = $this->getFactory()
             ->getImportProcessFacade()
-            ->runImportProcesses([$importProcessId]);
+            ->restartImportProcessById($importProcessId);
 
+        if (!$importProcessResponseTransfer->getIsSuccess()) {
+            $this->addErrorMessage($importProcessResponseTransfer->getMessage());
+
+            return $this->redirectResponse(sprintf(static::REDIRECT_URL_VIEW, $importProcessId));
+        }
+
+        $this->addInfoMessage(sprintf(static::MESSAGE_IMPORT_PROCESS_STARTED, $importProcessId));
+
+        return $this->redirectResponse(sprintf(static::REDIRECT_URL_VIEW, $importProcessId));
     }
 }
