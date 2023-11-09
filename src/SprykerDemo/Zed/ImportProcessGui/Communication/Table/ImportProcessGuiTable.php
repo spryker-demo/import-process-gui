@@ -10,6 +10,7 @@ namespace SprykerDemo\Zed\ImportProcessGui\Communication\Table;
 use Orm\Zed\ImportProcess\Persistence\Map\SpyImportProcessTableMap;
 use Orm\Zed\ImportProcess\Persistence\SpyImportProcess;
 use Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery;
+use Spryker\Service\UtilEncoding\UtilEncodingServiceInterface;
 use Spryker\Service\UtilText\Model\Url\Url;
 use Spryker\Zed\Acl\Business\AclFacadeInterface;
 use Spryker\Zed\Gui\Communication\Table\AbstractTable;
@@ -22,6 +23,16 @@ class ImportProcessGuiTable extends AbstractTable
      * @var string
      */
     protected const ACTIONS = 'actions';
+
+    /**
+     * @var string
+     */
+    protected const IMPORTER = 'importer';
+
+    /**
+     * @var string
+     */
+    protected const SOURCE = 'source';
 
     /**
      * @var string
@@ -39,6 +50,11 @@ class ImportProcessGuiTable extends AbstractTable
     protected const COL_CREATED_AT = SpyImportProcessTableMap::COL_CREATED_AT;
 
     /**
+     * @var string
+     */
+    protected const KEY_SOURCE_MAPS = 'source_maps';
+
+    /**
      * @var \Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery
      */
     protected $importProcessQuery;
@@ -49,13 +65,23 @@ class ImportProcessGuiTable extends AbstractTable
     protected $aclFacade;
 
     /**
+     * @var \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface
+     */
+    protected UtilEncodingServiceInterface $utilEncodingService;
+
+    /**
      * @param \Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery $importProcessQuery
      * @param \Spryker\Zed\Acl\Business\AclFacadeInterface $aclFacade
+     * @param \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface $utilEncodingService
      */
-    public function __construct(SpyImportProcessQuery $importProcessQuery, AclFacadeInterface $aclFacade)
-    {
+    public function __construct(
+        SpyImportProcessQuery $importProcessQuery,
+        AclFacadeInterface $aclFacade,
+        UtilEncodingServiceInterface $utilEncodingService
+    ) {
         $this->importProcessQuery = $importProcessQuery;
         $this->aclFacade = $aclFacade;
+        $this->utilEncodingService = $utilEncodingService;
     }
 
     /**
@@ -68,6 +94,8 @@ class ImportProcessGuiTable extends AbstractTable
         $config->setHeader([
             static::COL_ID => '#',
             static::COL_STATUS => 'Status',
+            static::IMPORTER => static::IMPORTER,
+            static::SOURCE => static::SOURCE,
             static::COL_CREATED_AT => 'Created at',
             static::ACTIONS => static::ACTIONS,
         ]);
@@ -96,13 +124,15 @@ class ImportProcessGuiTable extends AbstractTable
 
         /** @var array<\Orm\Zed\ImportProcess\Persistence\SpyImportProcess> $queryResult */
         $queryResult = $this->runQuery($this->importProcessQuery, $config, true);
-
         foreach ($queryResult as $importProcessEntity) {
+            $importMap = $this->utilEncodingService->decodeJson($importProcessEntity->getImportMap(), true) ?? [];
             $result[] = [
                 static::COL_ID => $importProcessEntity->getIdImportProcess(),
                 static::COL_STATUS => $importProcessEntity->getStatus() !== null
                     ? $this->createStatusLabel($importProcessEntity->getStatus())
                     : '',
+                static::IMPORTER => $this->extractListOfImporters($importMap),
+                static::SOURCE => $this->extractSourceUrl($importMap),
                 static::COL_CREATED_AT => $importProcessEntity->getCreatedAt() !== null
                     ? $importProcessEntity->getCreatedAt()->format('Y-m-d H:i:s')
                     : '',
@@ -134,5 +164,58 @@ class ImportProcessGuiTable extends AbstractTable
     protected function createStatusLabel(string $currentStatus): string
     {
         return $this->generateLabel(ucwords($currentStatus), ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$currentStatus]);
+    }
+
+    /**
+     * @param array $importMap
+     *
+     * @return string|null
+     */
+    protected function extractListOfImporters(array $importMap): ?string
+    {
+        $listOfImporters = [];
+
+        if (!$this->validateImportMap($importMap)) {
+            return null;
+        }
+
+        foreach ($importMap[static::KEY_SOURCE_MAPS] as $sourceMap) {
+            if (isset($sourceMap['import_type'])) {
+                $listOfImporters[] = $sourceMap['import_type'];
+            }
+        }
+
+        return implode(', ', $listOfImporters);
+    }
+
+    /**
+     * @param array $importMap
+     *
+     * @return string|null
+     */
+    protected function extractSourceUrl(array $importMap): ?string
+    {
+        if (!$this->validateImportMap($importMap)) {
+            return null;
+        }
+
+        foreach ($importMap[static::KEY_SOURCE_MAPS] as $sourceMap) {
+            if (isset($sourceMap['source'])) {
+                return $this->buildUrl($sourceMap['source']);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $importMap
+     *
+     * @return bool
+     */
+    protected function validateImportMap(array $importMap): bool
+    {
+        return !isset($importMap[static::KEY_SOURCE_MAPS])
+            || !is_array($importMap[static::KEY_SOURCE_MAPS]);
     }
 }

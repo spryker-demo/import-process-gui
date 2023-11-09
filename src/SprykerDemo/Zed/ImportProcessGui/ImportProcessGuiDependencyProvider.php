@@ -29,6 +29,11 @@ class ImportProcessGuiDependencyProvider extends AbstractBundleDependencyProvide
     public const QUERY_IMPORT_PROCESS = 'QUERY_IMPORT_PROCESS';
 
     /**
+     * @var string
+     */
+    public const SERVICE_UTIL_ENCODING = 'SERVICE_UTIL_ENCODING';
+
+    /**
      * @param \Spryker\Zed\Kernel\Container $container
      *
      * @return \Spryker\Zed\Kernel\Container
@@ -38,6 +43,7 @@ class ImportProcessGuiDependencyProvider extends AbstractBundleDependencyProvide
         $container = $this->addAclFacade($container);
         $container = $this->addImportProcessFacade($container);
         $container = $this->addImportProcessQuery($container);
+        $container = $this->addUtilEncodingService($container);
 
         return $container;
     }
@@ -77,8 +83,22 @@ class ImportProcessGuiDependencyProvider extends AbstractBundleDependencyProvide
      */
     protected function addImportProcessQuery(Container $container): Container
     {
-        $container->set(static::QUERY_IMPORT_PROCESS, function () {
+        $container->set(static::QUERY_IMPORT_PROCESS, $container->factory(function () {
             return SpyImportProcessQuery::create();
+        }));
+
+        return $container;
+    }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addUtilEncodingService(Container $container): Container
+    {
+        $container->set(static::SERVICE_UTIL_ENCODING, function (Container $container) {
+            return $container->getLocator()->utilEncoding()->service();
         });
 
         return $container;

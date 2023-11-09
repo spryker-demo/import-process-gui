@@ -8,6 +8,7 @@
 namespace SprykerDemo\Zed\ImportProcessGui\Communication;
 
 use Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery;
+use Spryker\Service\UtilEncoding\UtilEncodingServiceInterface;
 use Spryker\Zed\Acl\Business\AclFacadeInterface;
 use Spryker\Zed\Kernel\Communication\AbstractCommunicationFactory;
 use SprykerDemo\Zed\ImportProcess\Business\ImportProcessFacadeInterface;
@@ -27,6 +28,7 @@ class ImportProcessGuiCommunicationFactory extends AbstractCommunicationFactory
         return new ImportProcessGuiTable(
             $this->getImportProcessQuery(),
             $this->getAclFacade(),
+            $this->getUtilEncodingService(),
         );
     }
 
@@ -52,5 +54,13 @@ class ImportProcessGuiCommunicationFactory extends AbstractCommunicationFactory
     public function getImportProcessFacade(): ImportProcessFacadeInterface
     {
         return $this->getProvidedDependency(ImportProcessGuiDependencyProvider::FACADE_IMPORT_PROCESS);
+    }
+
+    /**
+     * @return \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface
+     */
+    public function getUtilEncodingService(): UtilEncodingServiceInterface
+    {
+        return $this->getProvidedDependency(ImportProcessGuiDependencyProvider::SERVICE_UTIL_ENCODING);
     }
 }
