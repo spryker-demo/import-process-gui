@@ -215,7 +215,7 @@ class ImportProcessGuiTable extends AbstractTable
      */
     protected function validateImportMap(array $importMap): bool
     {
-        return !isset($importMap[static::KEY_SOURCE_MAPS])
-            || !is_array($importMap[static::KEY_SOURCE_MAPS]);
+        return isset($importMap[static::KEY_SOURCE_MAPS])
+            && is_array($importMap[static::KEY_SOURCE_MAPS]);
     }
 }
