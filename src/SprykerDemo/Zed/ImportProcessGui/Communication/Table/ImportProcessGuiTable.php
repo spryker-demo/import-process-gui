@@ -126,13 +126,14 @@ class ImportProcessGuiTable extends AbstractTable
         $queryResult = $this->runQuery($this->importProcessQuery, $config, true);
         foreach ($queryResult as $importProcessEntity) {
             $importMap = $this->utilEncodingService->decodeJson($importProcessEntity->getImportMap(), true) ?? [];
+            $isValidImportMap = $this->validateImportMap($importMap);
             $result[] = [
                 static::COL_ID => $importProcessEntity->getIdImportProcess(),
                 static::COL_STATUS => $importProcessEntity->getStatus() !== null
                     ? $this->createStatusLabel($importProcessEntity->getStatus())
                     : '',
-                static::IMPORTER => $this->extractListOfImporters($importMap),
-                static::SOURCE => $this->extractSourceUrl($importMap),
+                static::IMPORTER => $isValidImportMap ? $this->extractListOfImporters($importMap) : '',
+                static::SOURCE => $isValidImportMap ? $this->extractSourceUrl($importMap) : '',
                 static::COL_CREATED_AT => $importProcessEntity->getCreatedAt() !== null
                     ? $importProcessEntity->getCreatedAt()->format('Y-m-d H:i:s')
                     : '',
@@ -167,17 +168,13 @@ class ImportProcessGuiTable extends AbstractTable
     }
 
     /**
-     * @param array $importMap
+     * @param array<string, string|array> $importMap
      *
-     * @return string|null
+     * @return string
      */
-    protected function extractListOfImporters(array $importMap): ?string
+    protected function extractListOfImporters(array $importMap): string
     {
         $listOfImporters = [];
-
-        if (!$this->validateImportMap($importMap)) {
-            return null;
-        }
 
         foreach ($importMap[static::KEY_SOURCE_MAPS] as $sourceMap) {
             if (isset($sourceMap['import_type'])) {
@@ -189,23 +186,19 @@ class ImportProcessGuiTable extends AbstractTable
     }
 
     /**
-     * @param array $importMap
+     * @param array<string, string|array> $importMap
      *
-     * @return string|null
+     * @return string
      */
-    protected function extractSourceUrl(array $importMap): ?string
+    protected function extractSourceUrl(array $importMap): string
     {
-        if (!$this->validateImportMap($importMap)) {
-            return null;
-        }
-
         foreach ($importMap[static::KEY_SOURCE_MAPS] as $sourceMap) {
             if (isset($sourceMap['source'])) {
                 return $this->buildUrl($sourceMap['source']);
             }
         }
 
-        return null;
+        return '';
     }
 
     /**
