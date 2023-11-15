@@ -168,7 +168,7 @@ class ImportProcessGuiTable extends AbstractTable
     }
 
     /**
-     * @param array<string, string|array> $importMap
+     * @param array<string, mixed> $importMap
      *
      * @return string
      */
@@ -186,7 +186,7 @@ class ImportProcessGuiTable extends AbstractTable
     }
 
     /**
-     * @param array<string, string|array> $importMap
+     * @param array<string, mixed> $importMap
      *
      * @return string
      */
@@ -202,7 +202,7 @@ class ImportProcessGuiTable extends AbstractTable
     }
 
     /**
-     * @param array $importMap
+     * @param array<string, mixed> $importMap
      *
      * @return bool
      */
