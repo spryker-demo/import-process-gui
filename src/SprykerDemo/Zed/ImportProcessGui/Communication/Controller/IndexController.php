@@ -32,11 +32,6 @@ class IndexController extends AbstractController
     /**
      * @var string
      */
-    protected const MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED = 'Url parameter "%s" is required.';
-
-    /**
-     * @var string
-     */
     protected const REDIRECT_URL = '/import-process-gui/index';
 
     /**
@@ -128,21 +123,20 @@ class IndexController extends AbstractController
     {
         $importProcessId = $this->castId($request->query->get(static::PARAM_ID_PROCESS));
         if (!$importProcessId) {
-            $this->addErrorMessage(sprintf(
-                static::MESSAGE_PARAMETER_ID_PROCESS_IS_REQUIRED,
-                static::PARAM_ID_PROCESS,
-            ));
+            $this->addErrorMessage(sprintf('Url parameter "%s" is required.', static::PARAM_ID_PROCESS));
         }
 
-        $importProcessResponseTransfer = $this->getFactory()
+        $importProcessTransfer = $this->getFactory()
             ->getImportProcessFacade()
-            ->restartImportProcessById($importProcessId);
+            ->findImportProcessById($importProcessId);
 
-        if ($importProcessResponseTransfer->getMessage()) {
-            $importProcessResponseTransfer->getIsSuccess()
-                ? $this->addInfoMessage($importProcessResponseTransfer->getMessage())
-                : $this->addErrorMessage($importProcessResponseTransfer->getMessage());
+        if (!$importProcessTransfer) {
+            $this->addErrorMessage(sprintf(static::MESSAGE_IMPORT_PROCESS_NOT_FOUND, $importProcessId));
+
+            return $this->redirectResponse(static::REDIRECT_URL);
         }
+
+        $this->getFactory()->getImportProcessFacade()->restartImportProcess($importProcessTransfer);
 
         return $this->redirectResponse(sprintf(static::REDIRECT_URL_VIEW, $importProcessId));
     }

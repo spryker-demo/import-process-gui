@@ -14,7 +14,7 @@ $('#refresh-status-button').click(function (e) {
     const url = '/import-process-gui/index/view-status?id-process=' + $id;
     $('#process-status-container').load(url, function () {
         const status = $('#process-status-data').data('status');
-        if ($.inArray(status, ['created', 'started']) === -1) {
+        if ($.inArray(status, ['created', 'queued']) === -1) {
             $('#refresh-status-button').remove();
         }
     });

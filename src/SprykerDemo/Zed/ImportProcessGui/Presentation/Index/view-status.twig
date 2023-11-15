@@ -5,7 +5,7 @@
 {% if importProcess.importReport %}
     <div class="flash-messages">
         {% for sourceReport in importProcess.importReport.sourceReports %}
-            {% if sourceReport.isSuccess %}
+            {% if importProcess.status == 'finished' and sourceReport.isSuccess %}
                 <div class="alert alert-success">
                     <i class="far fa-check-circle alert__icon"></i>
                     <div class="alert__text">
@@ -13,21 +13,23 @@
                     </div>
                 </div>
             {% else %}
-                <div class="alert alert-danger">
-                    <i class="fas fa-ban alert__icon"></i>
-                    <div class="alert__text">
-                        {{ sourceReport.importType ~ ': Import failed' | trans }}
-                    </div>
-                </div>
-                {% if sourceReport.messages | length %}
-                    {% for error in sourceReport.messages %}
-                        <div class="alert alert-danger">
-                            <i class="fas fa-ban alert__icon"></i>
-                            <div class="alert__text">
-                                <div class="form-error-messag d-block">{{ 'Error message: ' ~ error.message }}</div>
-                            </div>
+                {% if importProcess.status == 'failed' %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-ban alert__icon"></i>
+                        <div class="alert__text">
+                            {{ sourceReport.importType ~ ': Import failed' | trans }}
                         </div>
-                    {% endfor %}
+                    </div>
+                    {% if sourceReport.messages | length %}
+                        {% for error in sourceReport.messages %}
+                            <div class="alert alert-danger">
+                                <i class="fas fa-ban alert__icon"></i>
+                                <div class="alert__text">
+                                    <div class="form-error-messag d-block">{{ 'Error message: ' ~ error.message }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
         {% endfor %}
