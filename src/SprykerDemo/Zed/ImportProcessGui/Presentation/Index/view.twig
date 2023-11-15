@@ -20,7 +20,7 @@
     {% embed '@Gui/Partials/widget.twig' with { widget_title: 'Import status' | trans } %}
         {% block widget_content %}
             {% if importProcess %}
-                {% if importProcess.status in ['created', 'started'] %}
+                {% if importProcess.status in ['created', 'queued'] %}
                     <input type="button" class="btn btn-primary btn-w-m" value="{{ 'Refresh status' | trans }}" id="refresh-status-button" data-id="{{ importProcess.idImportProcess }}">
                 {% endif %}
                 <div id="process-status-container">
