@@ -3,8 +3,8 @@
 {% set widget_title = 'Import Process #' ~ idImportProcess | trans %}
 {% block section_title %}{{ widget_title }}{% endblock %}
 
-{% if '/spreadsheets/' | url_encode in sourceUrl %}
-    {% set importTypeSelectionActionUri = '/import-from-sheet?sheet-url=' ~ sourceUrl %}
+{% if '/spreadsheets/' in sourceUrl %}
+    {% set importTypeSelectionActionUri = '/import-from-sheet?sheet-url=' ~ sourceUrl | url_encode %}
 {% else %}
     {% set importTypeSelectionActionUri = '/select-sheet' %}
 {% endif %}

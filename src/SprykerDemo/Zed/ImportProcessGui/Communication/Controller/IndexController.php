@@ -68,7 +68,7 @@ class IndexController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|array<string, mixed>
      */
-    public function viewAction(Request $request): array
+    public function viewAction(Request $request)
     {
         $idImportProcess = $this->castId($request->query->get(static::PARAM_ID_PROCESS));
 
@@ -84,7 +84,7 @@ class IndexController extends AbstractController
 
         return $this->viewResponse([
             'idImportProcess' => $idImportProcess,
-            'sourceUrl' => urlencode($importProcessTransfer->getSource()),
+            'sourceUrl' => $importProcessTransfer->getSource(),
             'importProcess' => $importProcessTransfer,
             'labelClass' => ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$importProcessTransfer->getStatus()],
         ]);
@@ -120,7 +120,7 @@ class IndexController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|array<string, mixed>
      */
-    public function rerunAction(Request $request): RedirectResponse
+    public function rerunAction(Request $request)
     {
         $importProcessId = $this->castId($request->query->get(static::PARAM_ID_PROCESS));
         if (!$importProcessId) {
