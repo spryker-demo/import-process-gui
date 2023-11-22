@@ -125,15 +125,13 @@ class ImportProcessGuiTable extends AbstractTable
         /** @var array<\Orm\Zed\ImportProcess\Persistence\SpyImportProcess> $queryResult */
         $queryResult = $this->runQuery($this->importProcessQuery, $config, true);
         foreach ($queryResult as $importProcessEntity) {
-            $importMap = $this->utilEncodingService->decodeJson($importProcessEntity->getImportMap(), true) ?? [];
-            $isValidImportMap = $this->validateImportMap($importMap);
             $result[] = [
                 static::COL_ID => $importProcessEntity->getIdImportProcess(),
                 static::COL_STATUS => $importProcessEntity->getStatus() !== null
                     ? $this->createStatusLabel($importProcessEntity->getStatus())
                     : '',
-                static::IMPORTER => $isValidImportMap ? $this->extractListOfImporters($importMap) : '',
-                static::SOURCE => $isValidImportMap ? $this->extractSourceUrl($importMap) : '',
+                static::IMPORTER => $importProcessEntity->getImportTypes(),
+                static::SOURCE => $importProcessEntity->getSource(),
                 static::COL_CREATED_AT => $importProcessEntity->getCreatedAt() !== null
                     ? $importProcessEntity->getCreatedAt()->format('Y-m-d H:i:s')
                     : '',
@@ -165,50 +163,5 @@ class ImportProcessGuiTable extends AbstractTable
     protected function createStatusLabel(string $currentStatus): string
     {
         return $this->generateLabel(ucwords($currentStatus), ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$currentStatus]);
-    }
-
-    /**
-     * @param array<string, mixed> $importMap
-     *
-     * @return string
-     */
-    protected function extractListOfImporters(array $importMap): string
-    {
-        $listOfImporters = [];
-
-        foreach ($importMap[static::KEY_SOURCE_MAPS] as $sourceMap) {
-            if (isset($sourceMap['import_type'])) {
-                $listOfImporters[] = $sourceMap['import_type'];
-            }
-        }
-
-        return implode(', ', $listOfImporters);
-    }
-
-    /**
-     * @param array<string, mixed> $importMap
-     *
-     * @return string
-     */
-    protected function extractSourceUrl(array $importMap): string
-    {
-        foreach ($importMap[static::KEY_SOURCE_MAPS] as $sourceMap) {
-            if (isset($sourceMap['source'])) {
-                return $this->buildUrl($sourceMap['source']);
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * @param array<string, mixed> $importMap
-     *
-     * @return bool
-     */
-    protected function validateImportMap(array $importMap): bool
-    {
-        return isset($importMap[static::KEY_SOURCE_MAPS])
-            && is_array($importMap[static::KEY_SOURCE_MAPS]);
     }
 }

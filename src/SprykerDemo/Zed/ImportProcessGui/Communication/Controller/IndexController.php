@@ -66,7 +66,7 @@ class IndexController extends AbstractController
     /**
      * @param \Symfony\Component\HttpFoundation\Request $request
      *
-     * @return array<string, mixed>
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|array<string, mixed>
      */
     public function viewAction(Request $request): array
     {
@@ -76,16 +76,17 @@ class IndexController extends AbstractController
             ->getImportProcessFacade()
             ->findImportProcessById($idImportProcess);
 
-        /** @var \Generated\Shared\Transfer\ImportProcessSourceMapTransfer $importProcessSourceMapTransfer */
-        $importProcessSourceMapTransfer = $importProcessTransfer->getPayload()?->getSourceMaps()
-            ->getIterator()
-            ->offsetGet(0);
+        if (!$importProcessTransfer) {
+            $this->addErrorMessage(sprintf(static::MESSAGE_IMPORT_PROCESS_NOT_FOUND, $idImportProcess));
+
+            return $this->redirectResponse(static::REDIRECT_URL);
+        }
 
         return $this->viewResponse([
             'idImportProcess' => $idImportProcess,
-            'sourceUrl' => $importProcessSourceMapTransfer?->getSource(),
+            'sourceUrl' => urlencode($importProcessTransfer->getSource()),
             'importProcess' => $importProcessTransfer,
-            'labelClass' => $importProcessTransfer ? ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$importProcessTransfer->getStatus()] : '',
+            'labelClass' => ImportProcessGuiConfig::STATUS_CLASS_LABEL_MAPPING[$importProcessTransfer->getStatus()],
         ]);
     }
 
