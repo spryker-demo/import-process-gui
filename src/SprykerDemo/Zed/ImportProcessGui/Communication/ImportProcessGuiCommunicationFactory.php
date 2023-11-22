@@ -8,7 +8,6 @@
 namespace SprykerDemo\Zed\ImportProcessGui\Communication;
 
 use Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery;
-use Spryker\Service\UtilEncoding\UtilEncodingServiceInterface;
 use Spryker\Zed\Acl\Business\AclFacadeInterface;
 use Spryker\Zed\Kernel\Communication\AbstractCommunicationFactory;
 use SprykerDemo\Zed\ImportProcess\Business\ImportProcessFacadeInterface;
