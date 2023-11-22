@@ -10,7 +10,6 @@ namespace SprykerDemo\Zed\ImportProcessGui\Communication\Controller;
 use Spryker\Zed\Kernel\Communication\Controller\AbstractController;
 use SprykerDemo\Zed\ImportProcessGui\ImportProcessGuiConfig;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
