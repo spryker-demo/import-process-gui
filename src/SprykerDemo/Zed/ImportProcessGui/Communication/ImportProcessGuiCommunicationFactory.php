@@ -28,7 +28,6 @@ class ImportProcessGuiCommunicationFactory extends AbstractCommunicationFactory
         return new ImportProcessGuiTable(
             $this->getImportProcessQuery(),
             $this->getAclFacade(),
-            $this->getUtilEncodingService(),
         );
     }
 
@@ -54,13 +53,5 @@ class ImportProcessGuiCommunicationFactory extends AbstractCommunicationFactory
     public function getImportProcessFacade(): ImportProcessFacadeInterface
     {
         return $this->getProvidedDependency(ImportProcessGuiDependencyProvider::FACADE_IMPORT_PROCESS);
-    }
-
-    /**
-     * @return \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface
-     */
-    public function getUtilEncodingService(): UtilEncodingServiceInterface
-    {
-        return $this->getProvidedDependency(ImportProcessGuiDependencyProvider::SERVICE_UTIL_ENCODING);
     }
 }

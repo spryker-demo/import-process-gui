@@ -10,7 +10,6 @@ namespace SprykerDemo\Zed\ImportProcessGui\Communication\Table;
 use Orm\Zed\ImportProcess\Persistence\Map\SpyImportProcessTableMap;
 use Orm\Zed\ImportProcess\Persistence\SpyImportProcess;
 use Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery;
-use Spryker\Service\UtilEncoding\UtilEncodingServiceInterface;
 use Spryker\Service\UtilText\Model\Url\Url;
 use Spryker\Zed\Acl\Business\AclFacadeInterface;
 use Spryker\Zed\Gui\Communication\Table\AbstractTable;
@@ -65,23 +64,15 @@ class ImportProcessGuiTable extends AbstractTable
     protected $aclFacade;
 
     /**
-     * @var \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface
-     */
-    protected UtilEncodingServiceInterface $utilEncodingService;
-
-    /**
      * @param \Orm\Zed\ImportProcess\Persistence\SpyImportProcessQuery $importProcessQuery
      * @param \Spryker\Zed\Acl\Business\AclFacadeInterface $aclFacade
-     * @param \Spryker\Service\UtilEncoding\UtilEncodingServiceInterface $utilEncodingService
      */
     public function __construct(
         SpyImportProcessQuery $importProcessQuery,
         AclFacadeInterface $aclFacade,
-        UtilEncodingServiceInterface $utilEncodingService
     ) {
         $this->importProcessQuery = $importProcessQuery;
         $this->aclFacade = $aclFacade;
-        $this->utilEncodingService = $utilEncodingService;
     }
 
     /**
