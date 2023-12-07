@@ -69,7 +69,7 @@ class ImportProcessGuiTable extends AbstractTable
      */
     public function __construct(
         SpyImportProcessQuery $importProcessQuery,
-        AclFacadeInterface $aclFacade,
+        AclFacadeInterface $aclFacade
     ) {
         $this->importProcessQuery = $importProcessQuery;
         $this->aclFacade = $aclFacade;
