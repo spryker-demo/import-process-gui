@@ -91,6 +91,7 @@ class ImportProcessGuiTable extends AbstractTable
             static::ACTIONS => static::ACTIONS,
         ]);
 
+        $config->addRawColumn(static::SOURCE);
         $config->addRawColumn(static::ACTIONS);
         $config->addRawColumn(static::COL_STATUS);
 
@@ -122,7 +123,7 @@ class ImportProcessGuiTable extends AbstractTable
                     ? $this->createStatusLabel($importProcessEntity->getStatus())
                     : '',
                 static::IMPORTER => $importProcessEntity->getImportTypes(),
-                static::SOURCE => $importProcessEntity->getSource(),
+                static::SOURCE => $this->getSourceButton($importProcessEntity),
                 static::COL_CREATED_AT => $importProcessEntity->getCreatedAt() !== null
                     ? $importProcessEntity->getCreatedAt()->format('Y-m-d H:i:s')
                     : '',
@@ -131,6 +132,19 @@ class ImportProcessGuiTable extends AbstractTable
         }
 
         return $result;
+    }
+
+    /**
+     * @param \Orm\Zed\ImportProcess\Persistence\SpyImportProcess $importProcessEntity
+     *
+     * @return string
+     */
+    protected function getSourceButton(SpyImportProcess $importProcessEntity): string
+    {
+        return $this->generateEditButton(
+            Url::generate($importProcessEntity->getSource()),
+            'Link',
+        );
     }
 
     /**
