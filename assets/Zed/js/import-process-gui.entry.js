@@ -12,10 +12,22 @@ $('#refresh-status-button').click(function (e) {
     e.preventDefault();
 
     const url = '/import-process-gui/index/view-status?id-process=' + $id;
-    $('#process-status-container').load(url, function () {
-        const status = $('#process-status-data').data('status');
-        if ($.inArray(status, ['created', 'queued']) === -1) {
-            $('#refresh-status-button').remove();
+    $.get({
+        url,
+        success: function (response) {
+            if ($(response).find('form[name="auth"]').length > 0) {
+                document.location.href = '/security-gui/login';
+
+                return;
+            }
+
+            $('#process-status-container').html(response);
+
+            // remove refresh button if import process is not in created or queued status
+            const importProcessStatus = $('#process-status-data').data('status');
+            if ($.inArray(importProcessStatus, ['created', 'queued']) === -1) {
+                $('#refresh-status-button').remove();
+            }
         }
     });
 });
