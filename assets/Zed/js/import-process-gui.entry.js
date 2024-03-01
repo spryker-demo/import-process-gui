@@ -28,6 +28,6 @@ $('#refresh-status-button').click(function (e) {
             if ($.inArray(importProcessStatus, ['created', 'queued']) === -1) {
                 $('#refresh-status-button').remove();
             }
-        }
+        },
     });
 });
